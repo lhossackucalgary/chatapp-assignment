@@ -36,13 +36,16 @@ export default {
     socket.on('new uid', (msg) => {
       this.uid = msg.uid;
       this.uname = msg.username;
+      window.localStorage.setItem('uid', this.uid);
+      window.localStorage.setItem('uname', this.uname);
     });
-    // check if uid in localStorage
-    // if (false) {
-    //   socket.emit('post uid', this.uid);
-    // } else {
+
+    if(!localStorage.getItem('uid')) {
       socket.emit('new uid');
-    // }
+    } else {
+      this.uid = Number(localStorage.getItem('uid'));
+      socket.emit('post uid', this.uid);
+    }
   }
 }
 </script>

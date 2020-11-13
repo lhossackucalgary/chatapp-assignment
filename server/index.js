@@ -19,6 +19,9 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/:x/:y', function(req,res) {
+  res.sendFile(__dirname + `${x}/${y}`);
+})
 
 function emitOnline() {
   io.emit('online', Array.from(conns.values()));
@@ -90,7 +93,31 @@ io.on('connection', function(socket){
   });
 
   socket.on('post uid', function(uid){
-    conns.set(socket.id, uid);  // TODO fix this..
+    let name = "";
+    let color = "ffffff";
+    if (uid in usernames) {
+      let old = usernames[uid];
+      conns_array = Array.from(conns.values())
+      let unique = true;
+      for (let i = 0; i < conns_array.length; i++) {
+        if (conns_array[i].name === old.name) {
+          unique = false;
+          break;
+        }
+      }
+      if (unique) {
+        name = old.name;
+      } else {
+        name = socket.id;
+      }
+      color = old.color
+    } else {
+      name = socket.id;
+      color = "ffffff";
+    }
+    conns.set(socket.id, {"id": uid, "name": name, "color": color});
+    usernames[uid] = {"name": name, "color": color}
+    io.emit('usernames', usernames);
     emitOnline();
   });
 
