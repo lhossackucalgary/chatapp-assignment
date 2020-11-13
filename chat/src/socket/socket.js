@@ -1,5 +1,10 @@
 import io from 'socket.io-client';
-var socket = io('localhost:3212');
+var socket;
+if (process.env.NODE_ENV === "production"){
+  socket = io();
+} else {
+  socket = io('localhost:3212');
+}
 
 socket.on('connect', () => {
   console.log(socket.connected);
