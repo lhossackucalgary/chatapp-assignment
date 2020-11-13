@@ -1,5 +1,6 @@
 var app = require('express')();
 var http = require('http').Server(app);
+const fs = require('fs');
 const io = require("socket.io")(http, {
   cors: {
     origin: "*",
@@ -8,7 +9,7 @@ const io = require("socket.io")(http, {
     credentials: true
   }
 });
-var port = process.env.PORT || 3212;
+var port = process.env.PORT || 9000;
 
 var uid_ctr = 0;
 var usernames = {};
@@ -20,8 +21,8 @@ app.get('/', function(req, res){
 });
 
 app.get('/:x/:y', function(req,res) {
-  res.sendFile(__dirname + `${x}/${y}`);
-})
+  res.sendFile(__dirname + `/${req.params['x']}/${req.params['y']}`);
+});
 
 function emitOnline() {
   io.emit('online', Array.from(conns.values()));
