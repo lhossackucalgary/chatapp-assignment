@@ -1,10 +1,23 @@
 <template>
   <div class="message-log">
     <ol>
-      <li v-for="msg in msg_log" v-bind:key="msg.timestamp">
-        <small v-bind:class="{ mine: (uid == msg.uid) }">[ {{ usernames[msg.uid].name }} ]
-          {{ (new Date(msg.timestamp)).toLocaleDateString() + " " + (new Date(msg.timestamp)).toLocaleTimeString() }}</small>
-          <p v-bind:class="{ mine: (uid == msg.uid) }">{{ msg.content }}</p>
+      <li
+        v-for="msg in msg_log"
+        v-bind:key="msg.timestamp"
+      >
+        <small
+          v-bind:class="{ mine: (uid == msg.uid) }"
+          v-bind:style="{color: usernames[msg.uid].color}"
+        >
+          [ {{ usernames[msg.uid].name }} ]
+          {{ (new Date(msg.timestamp)).toLocaleDateString() + " " + (new Date(msg.timestamp)).toLocaleTimeString() }}
+        </small>
+        <p
+          v-bind:class="{ mine: (uid == msg.uid) }"
+          v-bind:style="{color: usernames[msg.uid].color}"
+        >
+          {{ msg.content }}
+        </p>
       </li>
     </ol>
   </div>
@@ -12,8 +25,7 @@
 
 <script>
 import socket from '@/socket/socket.js';
-//v-bind:class="{ mine: (uid == msg.uid) }"
-//v-bind:class="{ mine: (this.uid == msg.uid) }"
+
 export default {
   name: 'MessageLog',
   components: {

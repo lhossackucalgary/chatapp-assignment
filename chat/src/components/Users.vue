@@ -2,7 +2,12 @@
   <div class="users">
     <h2>Online</h2>
     <ul>
-      <li v-for="user in users" v-bind:key="user.id">
+      <li
+        v-for="user in users"
+        v-bind:key="user.id"
+        v-bind:class="{ mine: (user.id == uid) }"
+        v-bind:style="{color: user.color}"
+      >
         {{ user.name }}
       </li>
     </ul>
@@ -26,24 +31,25 @@ export default {
     }
   },
   methods: {
+    me_first() {
+      for (let i = 0; i < this.users.length; i++) {
+        if (this.users[i].id === this.uid) {
+          let tmp = this.users[0];
+          this.users[0] = this.users[i];
+          this.users[i] = tmp;
+        }
+      }
+    }
   },
   mounted() {
     socket.on('online', (msg) => {
       this.users = msg;
-      for (let i = 0; i < this.users.length; i++) {
-        if (this.users[i].id === this.uid) {
-          this.users[i].name += " (you)";
-        }
-      }
+      this.me_first();
     });
   },
   watch:{
     uid(){
-      for (let i = 0; i < this.users.length; i++) {
-        if (this.users[i].id === this.uid) {
-          this.users[i].name += " (you)";
-        }
-      }
+      this.me_first();
     }
   }
 }
@@ -61,6 +67,10 @@ h2 {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
   text-decoration: underline;
+}
+.mine{
+  font-weight: bold;
+  font-style: italic;
 }
 
 @media (max-width: 600px) {

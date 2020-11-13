@@ -38,9 +38,46 @@ io.on('connection', function(socket){
   });
 
   socket.on('change uname', function(new_name) {
-    let uid = conns.get(socket.id);
-    usernames[uid] = {"name": new_name, "color": usernames[uid].color};
-    io.emit('usernames', usernames);
+    conns_array = Array.from(conns.values())
+
+    let unique = true;
+    for (let i = 0; i < conns_array.length; i++) {
+      if (conns_array[i].name === new_name) {
+        unique = false;
+        break;
+      }
+    }
+
+    if (!unique) {
+      socket.emit('command failed', {'reason': 'non-unique username'});
+      return;
+    } else if (new_name.length > 20) {
+      socket.emit('command failed', {'reason': 'name too long'});
+      return;
+    } else {
+      let prev = conns.get(socket.id);
+      let uid = prev.id;
+      let color = prev.color;
+      conns.set(socket.id, {"id": uid, "name": new_name, "color": color});
+      usernames[uid] = {"name": new_name, "color": color};
+      io.emit('usernames', usernames);
+      emitOnline();
+    }
+  });
+
+  socket.on('change color', function(new_color) {
+    if (!/[0-9A-Fa-f]{6}/gi.test(new_color)) {
+      socket.emit('command failed', {'reason': 'invalid color. Format: RRGGBB (hex)'});
+      return;
+    } else {
+      let prev = conns.get(socket.id);
+      let uid = prev.id;
+      let name = prev.name;
+      usernames[uid] = {"name": name, "color": `#${new_color}`};
+      conns.set(socket.id, {"id": uid, "name": name, "color": `#${new_color}`});
+      io.emit('usernames', usernames);
+      emitOnline();
+    }
   });
 
   socket.on('new uid', function() {
