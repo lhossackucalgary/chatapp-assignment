@@ -36,6 +36,9 @@ export default {
             alert("Malformed command!");
           }
         } else {
+          this.msg.replaceAll(':)', '\u{1F601}');
+          this.msg.replaceAll(':(', '\u{1F61E}');
+          this.msg.replaceAll(':o', '\u{1F632}');
           socket.emit('chat message', {
             uid: this.uid,
             content: this.msg
